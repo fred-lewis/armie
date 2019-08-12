@@ -147,7 +147,7 @@ func handleRequest(req *Request, response *Response) {
 }
 
 func handleMessage(evt *Event) {
-	msg_res_event= evt.Event
+	msg_res_event = evt.Event
 	evt.Decode(&msg_res_person)
 }
 

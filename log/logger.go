@@ -26,12 +26,12 @@ type Logger struct {
 func New(out io.Writer) *Logger {
 	return &Logger{
 		out: out,
-		level: INFO,
+		level: WARNING,
 	}
 }
 
 func (l *Logger) Log(level LogLevel, format string, args ...interface{}) {
-	if level < l.level {
+	if level < l.level || l.out == nil {
 		return
 	}
 
