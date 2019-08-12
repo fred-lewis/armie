@@ -64,15 +64,14 @@ Example:
 		// The client connection can optionally accept a connectionHandler,
 		// or Request / Event Handlers can be wired up later with OnRequest
 		// and OnEvent.  The former method is necessary if ou expect a request
-		// or event to be waiting on the wire immediately.  Events or Requests
-		// with no handler are discarded.
+		// or event to be waiting on the wire immediately.
 		conn, err := armie.NewTCPConnection(":9999", os.Stdout, nil)
 		if err != nil {
 			fmt.Printf("Error connecting: %s", err.Error())
 		}
 
 		joe := Person{
-			Name: "joe",
+			Name: "Joe",
 			Age: 30,
 		}
 		conn.SendEvent("ARRIVED", "Joe")
@@ -82,5 +81,11 @@ Example:
 		res.GetResult(&joesAge)
 		fmt.Printf("Joe is %d.\n", joesAge)
 	}
+
+Output:
+
+	Joe has arrived.
+	Joe says 'Hello'.
+	Joe is 30.
  */
 package armie
