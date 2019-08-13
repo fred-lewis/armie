@@ -1,7 +1,7 @@
 
-##Armie
+## Armie
 
-####Async-RMI and Eventing framework.
+#### Async-RMI and Eventing framework.
 
 Package armie provides a framework for async, symmetric RMI and
 Eventing.  Connections facilitate both Requests (with responses)
