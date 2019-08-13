@@ -10,7 +10,7 @@ and a single connection can have any number of outstanding requests
 (a map of request-ids is kept in order to route responses).  Issuing a
 request returns a Future that can be used to acquire a response.
 
-A single Armie connection can process test of thousands of
+A single Armie connection can process tens of thousands of
 requests-per-second.
 
 Example:
