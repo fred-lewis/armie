@@ -3,7 +3,7 @@ package armie
 import "sync"
 
 //
-//  RPC future for awaiting responses to ARMIE requests
+//  RPC future for awaiting responses to RMI requests
 //
 type Future struct {
 	wg  sync.WaitGroup
@@ -29,6 +29,10 @@ func (f *Future) error(err error) {
 	f.wg.Done()
 }
 
+//
+// Await the response or error.  If the error returned is not-nil,
+// the result will be nil.
+//
 func (f *Future) GetResult(res interface{}) error {
 	f.wg.Wait()
 	if f.err != nil {

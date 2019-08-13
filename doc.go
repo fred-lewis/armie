@@ -1,14 +1,14 @@
 //
-// Armie
+//Armie
 //
-// Async-RMI and Eventing framework.
+//Async-RMI and Eventing framework.
 //
-// Package armie provides a framework for async, symmetric RMI and
-// Eventing.  Connections facilitate both Requests (with responses)
-// and Events (no response).  Requests are issued asynchronously,
-// and a single connection can have any number of outstanding requests
-// (a map of request-ids is kept in order to route responses).  Issuing a
-// request returns a Future that can be used to acquire a response.
+//Package armie provides a framework for async, symmetric RMI and
+//Eventing.  Connections facilitate both Requests (with responses)
+//and Events (no response).  Requests are issued asynchronously,
+//and a single connection can have any number of outstanding requests
+//(a map of request-ids is kept in order to route responses).  Issuing a
+//request returns a Future that can be used to acquire a response.
 //
 /*
 Example:
@@ -63,7 +63,7 @@ Example:
 
 		// The client connection can optionally accept a connectionHandler,
 		// or Request / Event Handlers can be wired up later with OnRequest
-		// and OnEvent.  The former method is necessary if ou expect a request
+		// and OnEvent.  The former method is necessary if you expect a request
 		// or event to be waiting on the wire immediately.
 		conn, err := armie.NewTCPConnection(":9999", os.Stdout, nil)
 		if err != nil {

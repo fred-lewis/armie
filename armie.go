@@ -27,6 +27,13 @@ type RequestHandler func(request *Request, response *Response)
 type EventHandler func(event *Event)
 type ConnectionHandler func(conn *Conn) error
 
+//
+// Server provides a Listen(addr) method for accepting new connections.
+// Register a ConnectionHandler with OnConnection() and use the
+// ConnectionHandler to wire up a Request and / or Event handler,
+// and do any other housekeeping required before requests and
+// events are accepted.
+//
 type Server struct {
 	logger       *log.Logger
 	addr         string
@@ -46,10 +53,19 @@ func newServer(logout io.Writer, transport transport) *Server {
 	}
 }
 
+//
+// Use the ConnectionHandler to wire up a Request and / or Event
+// handler, and do any other housekeeping required before requests and
+// events are accepted.
+//
 func (serv *Server) OnConnection(handler ConnectionHandler) {
 	serv.connHandler = handler
 }
 
+//
+// Listen at the given address for new connections.  Address
+// will be passed unmodified down to the underlying transport.
+//
 func (serv *Server) Listen(addr string) error {
 
 	serv.addr = addr
@@ -107,6 +123,10 @@ func (serv *Server) Listen(addr string) error {
 	return nil
 }
 
+//
+// Stop listening.  Close will not return until listener
+// goroutine has exited.
+//
 func (serv *Server) Close() error {
 	serv.shutdown = true
 	serv.listener.Close()
@@ -114,6 +134,11 @@ func (serv *Server) Close() error {
 	return nil
 }
 
+//
+// Conn is Symmetric.  Both server and client can register
+// RequestHandlers and EventHandlers, and both can SendEvent() and
+// SendRequest().
+//
 type Conn struct {
 	Alive bool
 	conn io.ReadWriteCloser
@@ -162,6 +187,10 @@ func newConn(transportConn *transportConn, logout io.Writer, handler ConnectionH
 	return c, nil
 }
 
+//
+// Send an asynchronous RMI Request.  Multiple arguments are supported.
+// Returns a Future that can be used to await the result.
+//
 func (c *Conn) SendRequest(method string, args ... interface{}) (*Future, error) {
 	if !c.Alive {
 		return nil, fmt.Errorf("request on inactive connection")
@@ -187,6 +216,11 @@ func (c *Conn) SendRequest(method string, args ... interface{}) (*Future, error)
 	return f, nil
 }
 
+//
+// Send an asynchronous Event.  Events should have an event name, and
+// a single data object.  Events are one-way communications and there's
+// no guarantee they arrive if the connection is lost.
+//
 func (c *Conn) SendEvent(method string, data interface{}) error {
 	if !c.Alive {
 		return fmt.Errorf("send event on inactive connection")
@@ -195,14 +229,24 @@ func (c *Conn) SendEvent(method string, data interface{}) error {
 	return encodeEvent(c, method, data)
 }
 
+//
+// Register a request handler.
+//
 func (c *Conn) OnRequest(handler RequestHandler) {
 	c.reqHandler = handler
 }
 
+//
+// Register an event handler.
+//
 func (c *Conn) OnEvent(handler EventHandler) {
 	c.evtHandler = handler
 }
 
+//
+// Close the connection.  Close will not return until the
+// goroutine reading events and requests exits.
+//
 func (c *Conn) Close() error {
 	if !c.Alive {
 		return fmt.Errorf("shutdown on inactive connection")

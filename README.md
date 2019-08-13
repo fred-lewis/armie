@@ -1,17 +1,24 @@
-package main
 
-import (
-	"fmt"
-	"github.com/fred-lewis/armie"
-	"os"
-)
+##Armie
 
-type person struct {
+####Async-RMI and Eventing framework.
+
+Package armie provides a framework for async, symmetric RMI and
+Eventing.  Connections facilitate both Requests (with responses)
+and Events (no response).  Requests are issued asynchronously,
+and a single connection can have any number of outstanding requests
+(a map of request-ids is kept in order to route responses).  Issuing a
+request returns a Future that can be used to acquire a response.
+
+
+Example:
+```
+type Person struct {
 	Name string
 	Age  int
 }
 
-func sayHello(person *person) int {
+func sayHello(person *Person) int {
 	fmt.Printf("%s says 'Hello'.\n", person.Name)
 	return person.Age
 }
@@ -63,8 +70,8 @@ func main() {
 		fmt.Printf("Error connecting: %s", err.Error())
 	}
 
-	joe := person{
-		Name: "joe",
+	joe := Person{
+		Name: "Joe",
 		Age: 30,
 	}
 	conn.SendEvent("ARRIVED", "Joe")
@@ -74,3 +81,11 @@ func main() {
 	res.GetResult(&joesAge)
 	fmt.Printf("Joe is %d.\n", joesAge)
 }
+```
+Output:
+```
+Joe has arrived.
+Joe says 'Hello'.
+Joe is 30.
+```
+

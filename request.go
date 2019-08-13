@@ -10,6 +10,9 @@ import (
 	"github.com/ugorji/go/codec"
 )
 
+//
+// An RMI request containing encoded arguments and a method name
+//
 type Request struct {
 	Method  string
 	Id      uint64
@@ -22,6 +25,11 @@ func genID() uint64 {
 	return r1.Uint64()
 }
 
+//
+// Decode arguments using reflect.Types.  In most cases (true RMI) CallMethod()
+// will be more convenient (it uses decodeArgs internally base on the target
+// method arguments)
+//
 func (r *Request) DecodeArgs(types []reflect.Type) ([]interface{}, error) {
 	args := make([]interface{}, len(types))
 	bb := bytes.NewBuffer(r.Payload)
@@ -42,6 +50,11 @@ func (r *Request) DecodeArgs(types []reflect.Type) ([]interface{}, error) {
 	return args, nil
 }
 
+//
+// Decode request arguments to match the method args, and call the method.
+// The method can return an error and, at most one other object, which will
+// in-turn be returned by CallMethod.
+//
 func (r *Request) CallMethod(method interface{}) (interface{}, error) {
 	types := make([]reflect.Type, 0)
 	ft := reflect.TypeOf(method)
@@ -80,6 +93,10 @@ func (r *Request) CallMethod(method interface{}) (interface{}, error) {
 	return res, err
 }
 
+//
+// Response is passed to a RequestHandler to allow the RequestHandler
+// to send a result or an error.
+//
 type Response struct {
 	Id        uint64
 	ErrString string
@@ -87,16 +104,27 @@ type Response struct {
 	conn      *Conn
 }
 
+//
+// Send the given result.  After a result is sent, the Response is
+// no longer usable.
+//
 func (r *Response) Send(result interface{}) error {
 	r.Result = result
 	return encodeResponse(r.conn, r)
 }
 
+//
+// Send the given error.  After an error is sent, the Response is
+// no longer usable.
+//
 func (r *Response) Error(err string) error {
 	r.ErrString = err
 	return encodeResponse(r.conn, r)
 }
 
+//
+// An event containing an event name and an encoded payload.
+//
 type Event struct {
 	Event   string
 	Payload []byte
